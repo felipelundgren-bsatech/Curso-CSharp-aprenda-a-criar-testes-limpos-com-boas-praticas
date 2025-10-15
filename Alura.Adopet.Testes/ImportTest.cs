@@ -1,5 +1,6 @@
 ﻿using Alura.Adopet.Console.Comandos;
 using Alura.Adopet.Console.Modelos;
+using Alura.Adopet.Console.Util;
 using Alura.Adopet.Testes.Builder;
 using Moq;
 
@@ -27,7 +28,7 @@ namespace Alura.Adopet.Testes
         }
 
         [Fact]
-        public async Task QuandoArquivoNaoExistenteDeveGerarException()
+        public async Task QuandoArquivoNaoExistenteDeveGerarFalha()
         {
             //Arrange
             List<Pet> listaDePet = new();
@@ -36,12 +37,37 @@ namespace Alura.Adopet.Testes
 
             var httpClientPet = HttpClientPetMockBuilder.GetMock();
 
-            string[] args = { "import", "lista.csv" };
+            string[] args = { "impor", "lista.csv" };
 
             var import = new Import(httpClientPet.Object, leitor.Object);
 
-            //Act+Assert
-            await Assert.ThrowsAnyAsync<Exception>(() => import.ExecutarAsync(args));
+            //Act+
+            var resultado =  await import.ExecutarAsync(args);
+
+            //Assert
+            Assert.True(resultado.IsFailed);
+        }
+
+        [Fact]
+        public async Task QuandoPetEstiverNoArquivoDeveSerImportado()
+        {
+            //Arrage
+            List<Pet> listaDePet = new();
+            var pet = new Pet(new Guid("456b24f4-19e2-4423-845d-4a80e8854a41"),"Lima", TipoPet.Cachorro);
+            
+            listaDePet.Add(pet);
+            var leitorDeArquivo = LeitorDeArquivosMockBuilder.GetMock(listaDePet);
+
+            var httpClientPet = HttpClientPetMockBuilder.GetMock();
+
+            var import = new Import(httpClientPet.Object, leitorDeArquivo.Object);
+            string[] args = { "import", "lista.csv" };
+            //Act
+            var resultado = await import.ExecutarAsync(args);
+            //Assert
+            Assert.True(resultado.IsSuccess);
+            var sucesso = (SuccessWithPets)resultado.Successes[0];
+            Assert.Equal("Lima", sucesso.Data.First().Nome);
         }
 
     }
