@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Alura.Adopet.Console.Servicos
 {
-    internal class AdopetAPIClientFactory : IHttpClientFactory
+    public class AdopetAPIClientFactory : IHttpClientFactory
     {
-        string url = "http://localhost:5057";
+        private string url = "http://localhost:5057";
         public HttpClient CreateClient(string name)
         {
             HttpClient _client = new HttpClient();
