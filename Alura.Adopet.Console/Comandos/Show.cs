@@ -16,18 +16,20 @@ namespace Alura.Adopet.Console.Comandos
 
         public Task<Result> ExecutarAsync(string[] args)
         {
-            this.ExibeConteudoArquivo(caminhoDoArquivoASerExibido: args[1]); 
-            return Task.FromResult(Result.Ok());
+            try
+            {
+               return this.ExibeConteudoArquivo(caminhoDoArquivoASerExibido: args[1]); 
+            }
+            catch (Exception exception)
+            {
+               return Task.FromResult(Result.Fail(new Error("Importação falhou!").CausedBy(exception)));
+            }
         }
 
-        private void ExibeConteudoArquivo(string caminhoDoArquivoASerExibido)
+        private Task<Result> ExibeConteudoArquivo(string caminhoDoArquivoASerExibido)
         {           
-            var listaDepets = leitor.RealizaLeitura();
-            foreach (var pet in listaDepets)
-            {
-                System.Console.WriteLine(pet);
-            }
-
+            var listaDepets = leitor.RealizaLeitura();       
+            return Task.FromResult(Result.Ok().WithSuccess(new SuccessWithPets(listaDepets, "Exibição do arquivo realizada com sucesso!")));
 
         }
     }

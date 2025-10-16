@@ -1,5 +1,6 @@
 ﻿using Alura.Adopet.Console.Modelos;
 using Alura.Adopet.Console.Servicos;
+using Alura.Adopet.Console.Util;
 using FluentResults;
 
 namespace Alura.Adopet.Console.Comandos
@@ -21,15 +22,18 @@ namespace Alura.Adopet.Console.Comandos
         }
 
         private async Task<Result> ListaDadosPetsDaAPIAsync()
-        {          
-            IEnumerable<Pet>? pets = await clientPet.ListPetsAsync();
-            System.Console.WriteLine("----- Lista de Pets importados no sistema -----");
-            foreach (var pet in pets)
+        {
+            try
             {
-                System.Console.WriteLine(pet);
-                
+                IEnumerable<Pet>? pets = await clientPet.ListPetsAsync();               
+                return Result.Ok().WithSuccess(new SuccessWithPets(pets,"Listagem de Pet's realizada com sucesso!"));
             }
-            return Result.Ok(); 
+            catch (Exception exception)
+            {
+
+                return Result.Fail(new Error("Listagem falhou!").CausedBy(exception));
+            }
+
         }
 
     }
