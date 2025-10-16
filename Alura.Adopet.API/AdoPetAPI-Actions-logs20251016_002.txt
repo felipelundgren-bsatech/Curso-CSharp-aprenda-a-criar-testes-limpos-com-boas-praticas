@@ -1,0 +1,1 @@
+2025-10-16 15:10:24.879 -03:00 [INF] Listagem gerada com sucesso!
